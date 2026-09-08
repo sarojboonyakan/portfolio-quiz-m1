@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบการจัดทำ Portfolio ม.1</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f4f6f9; color: #333; }
+        .quiz-card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 20px; }
+        .header-box { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; border-radius: 12px; padding: 30px; margin-bottom: 25px; }
+        .option-label { display: block; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 15px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+        .option-label:hover { background: #e9ecef; }
+        .btn-submit { background-color: #28a745; color: white; font-weight: 600; padding: 12px 30px; border-radius: 25px; border: none; }
+        .btn-submit:hover { background-color: #218838; }
+        .result-box { display: none; background: #ffffff; border-radius: 12px; padding: 30px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+<div class="container py-4" style="max-width: 800px;">
+    <!-- Header -->
+    <div class="header-box text-center">
+        <h2>แบบทดสอบการจัดทำ Portfolio</h2>
+        <p class="mb-0">ประเมินความรู้หลังศึกษารายงานความรู้ ระดับชั้นมัธยมศึกษาปีที่ 1</p>
+    </div>
+
+    <!-- Student Info Form -->
+    <div class="quiz-card" id="studentInfoCard">
+        <h5 class="mb-3 text-primary">📌 ข้อมูลนักเรียน</h5>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">ชื่อ - นามสกุล</label>
+                <input type="text" id="studentName" class="form-control" placeholder="ด.ช. / ด.ญ. รักเรียน ยิ่งใหญ่" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">ห้องเรียน</label>
+                <select id="studentRoom" class="form-select" required>
+                    <option value="">เลือกห้อง</option>
+                    <option value="ม.1/1">ม.1/1</option>
+                    <option value="ม.1/2">ม.1/2</option>
+                    <option value="ม.1/3">ม.1/3</option>
+                    <option value="ม.1/4">ม.1/4</option>
+                    <option value="ม.1/5">ม.1/5</option>
+                    <option value="ม.1/6">ม.1/6</option>
+                    <option value="ม.1/7">ม.1/7</option>
+                    <option value="ม.1/8">ม.1/8</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">เลขที่</label>
+                <input type="number" id="studentNo" class="form-control" placeholder="1" required>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Form -->
+    <form id="quizForm">
+        <div id="quizContainer"></div>
+        <div class="text-center my-4">
+            <button type="button" class="btn btn-submit btn-lg" onclick="submitQuiz()">ส่งแบบทดสอบ 🚀</button>
+        </div>
+    </form>
+
+    <!-- Result Display -->
+    <div class="result-box mt-4" id="resultCard">
+        <h3 class="text-success fw-bold">🎉 ทำแบบทดสอบเสร็จสิ้น!</h3>
+        <p class="fs-5 mt-3" id="studentDisplay"></p>
+        <div class="display-3 fw-bold text-primary my-3" id="scoreDisplay">0 / 20</div>
+        <p id="feedbackText" class="text-muted"></p>
+        <button class="btn btn-outline-primary mt-3" onclick="location.reload()">ทำแบบทดสอบอีกครั้ง</button>
+    </div>
+</div>
+
+<script>
+const quizData = [
+    { q: "1. คำว่า Portfolio ในบริบทของการศึกษาหมายถึงข้อใด?", options: ["อัลบั้มสะสมภาพถ่ายแฟชั่น", "แฟ้มสะสมผลงานและการเรียนรู้", "สมุดจดบันทึกการเรียนประจำวัน", "เอกสารรายงานการขาดเรียน"], ans: 1 },
+    { q: "2. จุดประสงค์หลักของการทำ Portfolio สำหรับนักเรียนชั้น ม.1 คือข้อใด?", options: ["เพื่อส่งเข้าประกวดแข่งขันระดับประเทศ", "เพื่อนำเสนอตนเอง ความก้าวหน้า และรวบรวมผลงาน", "เพื่อใช้แทนการสอบกลางภาคและปลายภาค", "เพื่อความสวยงามไว้ประดับห้องเรียน"], ans: 1 },
+    { q: "3. ส่วนประกอบแรกที่ผู้อ่านจะเห็นใน Portfolio คือส่วนใด?", options: ["คำนำ", "หน้าปก (Cover)", "ประวัติส่วนตัว", "เกียรติบัตร"], ans: 1 },
+    { q: "4. หน้าปก Portfolio ที่ดีและเหมาะสมควรมียกเว้นข้อใด?", options: ["ชื่อ-นามสกุล และระดับชั้น", "รูปถ่ายของนักเรียนที่เห็นหน้าชัดเจน", "ชื่อโรงเรียน", "รายการคำนวณเกรดเฉลี่ยรายวิชาอย่างละเอียด"], ans: 3 },
+    { q: "5. ส่วนประวัติส่วนตัว (Profile) ควรใส่ข้อมูลในข้อใดจึงจะเหมาะสมที่สุด?", options: ["คติประจำใจและความถนัด/ความสนใจ", "เบอร์โทรศัพท์ของเพื่อนร่วมชั้นทุกคน", "รหัสผ่านบัญชีโซเชียลมีเดีย", "รายการสินค้าที่ชอบซื้อ"], ans: 0 },
+    { q: "6. หากนักเรียนต้องการนำเสนอผลงานกิจกรรมจิตอาสา ควรจัดไว้อยู่ในส่วนใด?", options: ["ประวัติการศึกษา", "กิจกรรมและผลงาน (Activities/Projects)", "หน้าปก", "สารบัญ"], ans: 1 },
+    { q: "7. สิ่งใดสำคัญที่สุดในการใส่รูปภาพกิจกรรมลงใน Portfolio?", options: ["ต้องใช้กล้องถ่ายรูปราคาแพงเท่านั้น", "ต้องแต่งรูปด้วยฟิลเตอร์หลายแบบ", "ต้องมีคำอธิบายใต้ภาพว่าทำอะไรและได้เรียนรู้อะไร", "ต้องใส่รูปภาพไม่น้อยกว่า 50 รูปในหน้าเดียว"], ans: 2 },
+    { q: "8. เกียรติบัตร (Certificates) ที่นำมาใส่ใน Portfolio ควรมีลักษณะอย่างไร?", options: ["ใส่เกียรติบัตรทั้งหมดที่มีตั้งแต่ระดับอนุบาล", "เลือกเกียรติบัตรที่สอดคล้องกับความตั้งใจและมีความหมาย", "ใช้เกียรติบัตรของเพื่อนมาเปลี่ยนชื่อเป็นของเรา", "ใส่เฉพาะเกียรติบัตรที่ได้รางวัลชนะเลิศอันดับ 1 เท่านั้น"], ans: 1 },
+    { q: "9. การจัดทำ Portfolio ควรเน้นหลักการตามข้อใดมากที่สุด?", options: ["เน้นความฟู่ฟ่าสวยงามแต่ไม่มีเนื้อหา", "เน้นความเป็นตัวของตัวเอง ชัดเจน และเป็นจริง", "เน้นคัดลอกรูปแบบของเพื่อนทั้งหมด", "เน้นการจ้างผู้อื่นออกแบบให้"], ans: 1 },
+    { q: "10. ข้อใด ไม่ใช่ ประโยชน์ของการประเมินตนเองก่อนทำ Portfolio?", options: ["ทำให้รู้ว่าตนเองมีจุดเด่นและความสนใจเรื่องใด", "ช่วยให้เลือกผลงานมารวบรวมได้ตรงจุด", "ทำให้ได้คะแนนเต็มโดยไม่ต้องลงมือทำ", "ช่วยให้เห็นการเติบโตและพัฒนาการของตนเอง"], ans: 2 },
+    { q: "11. โทนสีและธีมในการออกแบบ Portfolio ควรมีลักษณะอย่างไร?", options: ["ใช้สีฉูดฉาดหลากสีในหน้าเดียวจนอ่านยาก", "ใช้สีที่อ่านง่าย สบายตา และสะท้อนความเป็นตัวเรา", "ใช้สีดำล้วนทุกหน้าเพื่อความประหยัด", "เปลี่ยนธีมทุกๆ หน้าโดยไม่มีความต่อเนื่อง"], ans: 1 },
+    { q: "12. ในส่วนประวัติการศึกษา (Education) นักเรียน ชั้น ม.1 ควรระบุข้อมูลใด?", options: ["โรงเรียนประถมศึกษาที่จบมา และโรงเรียนปัจจุบัน", "สถานที่ทำงานในอนาคต", "ประวัติการศึกษาของครอบครัว", "ประวัติการเข้ารับการอบรมของครูผู้สอน"], ans: 0 },
+    { q: "13. หากไม่มีเกียรติบัตรรางวัลการแข่งขัน นักเรียนสามารถใส่สิ่งใดแทนได้?", options: ["ภาพถ่ายสัตว์เลี้ยง", "ภาพกิจกรรมการเข้าร่วม อบรม จิตอาสา หรือผลงานในชั้นเรียน", "ไม่ต้องใส่ส่วนผลงานเลย", "คัดลอกรูปเกียรติบัตรจากอินเทอร์เน็ต"], ans: 1 },
+    { q: "14. การเขียน \"คำนำ\" ใน Portfolio มีวัตถุประสงค์เพื่ออะไร?", options: ["ขอบคุณผู้มีส่วนเกี่ยวข้องและบอกวัตถุประสงค์การจัดทำ", "ระบุรายชื่อเพื่อนในห้อง", "สรุปเนื้อหาบทเรียนวิชาคณิตศาสตร์", "ชวนเชื่อให้ผู้อ่านมาซื้อสินค้า"], ans: 0 },
+    { q: "15. การสะท้อนความคิด (Reflection) หลังจบกิจกรรม หมายถึงอะไร?", options: ["การถ่ายภาพสะท้อนเงากระจก", "การเขียนสรุปว่าตนเองได้ข้อคิดหรือการเรียนรู้อะไรจากกิจกรรมนั้น", "การวิจารณ์ผู้อื่นที่เข้าร่วมกิจกรรม", "การลบภาพกิจกรรมทิ้ง"], ans: 1 },
+    { q: "16. ข้อใดเป็นวิธีการเตรียมตัวเก็บรวบรวมผลงานที่ดีที่สุด?", options: ["รอเก็บผลงานวันสุดท้ายก่อนส่งแฟ้ม", "ทยอยถ่ายภาพ ถ่ายเอกสาร และเก็บไฟล์ผลงานแยกเป็นหมวดหมู่เสมอ", "ให้คุณพ่อคุณแม่เป็นผู้เก็บรวบรวมให้ทั้งหมด", "เก็บไว้ในความทรงจำโดยไม่ต้องบันทึก"], ans: 1 },
+    { q: "17. การจัดทำ E-Portfolio (แฟ้มสะสมผลงานอิเล็กทรอนิกส์) มีข้อดีอย่างไร?", options: ["เข้าถึงยากและเปิดดูได้ลำบาก", "ประหยัดกระดาษ สะดวกต่อการจัดเก็บและแชร์ลิงก์", "ไม่มีใครสามารถเปิดดูได้เลย", "ต้องเสียค่าใช้จ่ายสูงมาก"], ans: 1 },
+    { q: "18. การเลือกใช้ฟอนต์ (Font/ตัวอักษร) ใน Portfolio ควรเป็นอย่างไร?", options: ["ใช้ฟอนต์ตัวประดิษฐ์อ่านยากๆ เพื่อความเท่", "ใช้ฟอนต์ที่อ่านง่าย ขนาดเหมาะสม และจัดระเบียบหัวข้อชัดเจน", "ใช้ขนาดตัวอักษรเท่ากันหมดทั้งหน้า", "ใช้อักษรภาษาอื่นที่ไม่ใช่ภาษาไทย"], ans: 1 },
+    { q: "19. สิ่งใดที่ ไม่ควร ปรากฏใน Portfolio เป็นอย่างยิ่ง?", options: ["ข้อมูลเท็จ หรือผลงานที่ไม่ได้ทำด้วยตนเอง", "รูปถ่ายกิจกรรมกลุ่ม", "จุดประสงค์การเรียนรู้", "ช่องทางการติดต่อ เช่น อีเมล"], ans: 0 },
+    { q: "20. คุณลักษณะสำคัญที่สุดที่จะทำให้ Portfolio ของนักเรียนโดดเด่นคืออะไร?", options: ["ความจงรักภักดีต่อยี่ห้อสินค้า", "ความซื่อสัตย์ สดใส และสะท้อนตัวตนจริงของนักเรียน", "จำนวนหน้าที่หนามากกว่า 100 หน้า", "การใช้เทคนิคตัดต่อระดับมืออาชีพ"], ans: 1 }
+];
+
+function renderQuiz() {
+    const container = document.getElementById('quizContainer');
+    quizData.forEach((item, index) => {
+        let optionsHTML = '';
+        item.options.forEach((opt, optIndex) => {
+            optionsHTML += `
+                <label class="option-label">
+                    <input type="radio" name="q${index}" value="${optIndex}"> ${opt}
+                </label>
+            `;
+        });
+        container.innerHTML += `
+            <div class="quiz-card">
+                <h6 class="fw-bold mb-3">${item.q}</h6>
+                ${optionsHTML}
+            </div>
+        `;
+    });
+}
+
+function submitQuiz() {
+    const name = document.getElementById('studentName').value.trim();
+    const room = document.getElementById('studentRoom').value;
+    const no = document.getElementById('studentNo').value.trim();
+
+    if (!name || !room || !no) {
+        alert('กรุณากรอกข้อมูล ชื่อ ห้องเรียน และเลขที่ ให้ครบถ้วนก่อนส่งแบบทดสอบครับ');
+        return;
+    }
+
+    let score = 0;
+    quizData.forEach((item, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        if (selected && parseInt(selected.value) === item.ans) {
+            score++;
+        }
+    });
+
+    document.getElementById('quizForm').style.display = 'none';
+    document.getElementById('studentInfoCard').style.display = 'none';
+    
+    const resultCard = document.getElementById('resultCard');
+    resultCard.style.display = 'block';
+    
+    document.getElementById('studentDisplay').innerText = `คุณ ${name} (${room} เลขที่ ${no})`;
+    document.getElementById('scoreDisplay').innerText = `${score} / 20 คะแนน`;
+
+    let feedback = '';
+    if (score >= 16) feedback = '🏆 ยอดเยี่ยมมาก! คุณมีความเข้าใจองค์ประกอบและการทำ Portfolio อย่างสมบูรณ์';
+    else if (score >= 10) feedback = '👍 เก่งมาก! คุณมีความรู้พื้นฐานที่ดีเกี่ยวกับการจัดทำ Portfolio';
+    else feedback = '📚 ลองกลับไปทบทวนใบความรู้อีกครั้ง แล้วกลับมาทำใหม่นะ!';
+    
+    document.getElementById('feedbackText').innerText = feedback;
+}
+
+window.onload = renderQuiz;
+</script>
+
+</body>
+</html>
+
